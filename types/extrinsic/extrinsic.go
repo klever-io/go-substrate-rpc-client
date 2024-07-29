@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"math/big"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/scale"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/signature"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types/codec"
-	"math/big"
 )
 
 // DynamicExtrinsic is an extrinsic type that can be used on chains that
@@ -100,6 +101,31 @@ func (e *DynamicExtrinsic) Sign(signer signature.KeyringPair, meta *types.Metada
 	e.Version |= types.ExtrinsicBitSigned
 
 	return nil
+}
+
+func (e DynamicExtrinsic) NewPayload(meta *types.Metadata, opts ...SigningOption) (*Payload, error) {
+	encodedMethod, err := codec.Encode(e.Method)
+	if err != nil {
+		return nil, fmt.Errorf("encode method: %w", err)
+	}
+
+	fieldValues := SignedFieldValues{}
+
+	for _, opt := range opts {
+		opt(fieldValues)
+	}
+
+	payload, err := createPayload(meta, encodedMethod)
+
+	if err != nil {
+		return nil, fmt.Errorf("creating payload: %w", err)
+	}
+
+	if err := payload.MutateSignedFields(fieldValues); err != nil {
+		return nil, fmt.Errorf("mutate signed fields: %w", err)
+	}
+
+	return payload, nil
 }
 
 func (e DynamicExtrinsic) Encode(encoder scale.Encoder) error {
