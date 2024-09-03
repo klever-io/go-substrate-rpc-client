@@ -18,13 +18,13 @@ package author
 
 import (
 	"context"
-	"github.com/centrifuge/go-substrate-rpc-client/v4/types/extrinsic"
 	"sync"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v4/config"
 	gethrpc "github.com/centrifuge/go-substrate-rpc-client/v4/gethrpc"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types/codec"
+	"github.com/centrifuge/go-substrate-rpc-client/v4/types/extrinsic"
 )
 
 // ExtrinsicStatusSubscription is a subscription established through one of the Client's subscribe methods.
@@ -64,16 +64,7 @@ func (s *ExtrinsicStatusSubscription) Unsubscribe() {
 
 // SubmitAndWatchExtrinsic will submit and subscribe to watch an extrinsic until unsubscribed, returning a subscription
 // that will receive server notifications containing the extrinsic status updates.
-func (a *author) SubmitAndWatchExtrinsic(xt types.Extrinsic) (*ExtrinsicStatusSubscription, error) { //nolint:lll
-	hexEncodedExtrinsic, err := codec.EncodeToHex(xt)
-	if err != nil {
-		return nil, err
-	}
-
-	return a.submitAndWatchExtrinsic(hexEncodedExtrinsic)
-}
-
-func (a *author) SubmitAndWatchDynamicExtrinsic(xt extrinsic.DynamicExtrinsic) (*ExtrinsicStatusSubscription, error) { //nolint:lll
+func (a *author) SubmitAndWatchExtrinsic(xt extrinsic.Extrinsic) (*ExtrinsicStatusSubscription, error) { //nolint:lll
 	hexEncodedExtrinsic, err := codec.EncodeToHex(xt)
 	if err != nil {
 		return nil, err
