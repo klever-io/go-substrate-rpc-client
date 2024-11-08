@@ -78,34 +78,12 @@ func (e Extrinsic) Type() uint8 {
 
 // Sign adds a signature to the extrinsic.
 func (e *Extrinsic) Sign(signer signature.KeyringPair, meta *types.Metadata, opts ...SigningOption) error {
-	if e.Type() != Version4 {
-		//nolint:lll
-		return ErrInvalidVersion.WithMsg("unsupported extrinsic version: %v (isSigned: %v, type: %v)", e.Version, e.IsSigned(), e.Type())
-	}
-
-	encodedMethod, err := codec.Encode(e.Method)
-	if err != nil {
-		return ErrScaleEncode.Wrap(err)
-	}
-
-	fieldValues := SignedFieldValues{}
-
-	for _, opt := range opts {
-		opt(fieldValues)
-	}
-
-	payload, err := createPayload(meta, encodedMethod)
-
+	payload, err := e.NewPayload(meta, opts...)
 	if err != nil {
 		return ErrPayloadCreation.Wrap(err)
 	}
 
-	if err := payload.MutateSignedFields(fieldValues); err != nil {
-		return ErrPayloadMutation.Wrap(err)
-	}
-
 	signerPubKey, err := types.NewMultiAddressFromAccountID(signer.PublicKey)
-
 	if err != nil {
 		return ErrMultiAddressCreation.Wrap(err)
 	}
@@ -127,6 +105,36 @@ func (e *Extrinsic) Sign(signer signature.KeyringPair, meta *types.Metadata, opt
 	e.Version |= BitSigned
 
 	return nil
+}
+
+func (e *Extrinsic) NewPayload(meta *types.Metadata, opts ...SigningOption) (*Payload, error) {
+	if e.Type() != Version4 {
+		//nolint:lll
+		return nil, ErrInvalidVersion.WithMsg("unsupported extrinsic version: %v (isSigned: %v, type: %v)", e.Version, e.IsSigned(), e.Type())
+	}
+
+	encodedMethod, err := codec.Encode(e.Method)
+	if err != nil {
+		return nil, ErrScaleEncode.Wrap(err)
+	}
+
+	fieldValues := SignedFieldValues{}
+
+	for _, opt := range opts {
+		opt(fieldValues)
+	}
+
+	payload, err := createPayload(meta, encodedMethod)
+
+	if err != nil {
+		return nil, ErrPayloadCreation.Wrap(err)
+	}
+
+	if err := payload.MutateSignedFields(fieldValues); err != nil {
+		return nil, ErrPayloadMutation.Wrap(err)
+	}
+
+	return payload, nil
 }
 
 func (e Extrinsic) Encode(encoder scale.Encoder) error {
