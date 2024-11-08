@@ -141,7 +141,7 @@ const (
 	SpecVersionSignedField           SignedFieldName = "spec_version"
 	TransactionVersionSignedField    SignedFieldName = "transaction_version"
 	GenesisHashSignedField           SignedFieldName = "genesis_hash"
-	AppIDSignedField                 SignedFieldName = "appId"
+	AppIDSignedField                 SignedFieldName = "app_id"
 )
 
 // PayloadMutatorFn is the type used for mutating the Payload during creation.
