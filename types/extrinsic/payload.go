@@ -20,6 +20,7 @@ const (
 	ErrPayloadEncoding                 = libErr.Error("payload encoding")
 	ErrSignedExtensionTypeNotDefined   = libErr.Error("signed extension type not defined")
 	ErrSignedExtensionTypeNotSupported = libErr.Error("signed extension type not supported")
+	ErrMetadataVersionNotSupported     = libErr.Error("metadata version not supported")
 )
 
 // SignedField represents a field used in the Payload.
@@ -225,6 +226,7 @@ var PayloadMutatorFns = map[extensions.SignedExtensionName]PayloadMutatorFn{
 	extensions.StorageWeightReclaimSignedExtension:        func(payload *Payload) {},
 	extensions.PrevalidateAttestsSignedExtension:          func(payload *Payload) {},
 	extensions.CheckNetworkMembershipSignedExtension:      func(payload *Payload) {},
+	extensions.SetEvmOriginSignedExtension:                func(payload *Payload) {},
 }
 
 // createPayload iterates over all signed extensions provided in the metadata and
@@ -236,6 +238,19 @@ func createPayload(meta *types.Metadata, encodedCall []byte) (*Payload, error) {
 		EncodedCall: encodedCall,
 	}
 
+	switch meta.Version {
+	case 13:
+		return createPayloadV13(meta, payload)
+	case 14:
+		return createPayloadV14(meta, payload)
+	default:
+		return nil, ErrMetadataVersionNotSupported.WithMsg("version - '%d'", meta.Version)
+	}
+}
+
+// createPayloadV14 iterates over all signed extensions provided in the metadata V14 and
+// attempts to load and use a PayloadMutatorFn for each one.
+func createPayloadV14(meta *types.Metadata, payload *Payload) (*Payload, error) {
 	for _, signedExtension := range meta.AsMetadataV14.Extrinsic.SignedExtensions {
 		signedExtensionType, ok := meta.AsMetadataV14.EfficientLookup[signedExtension.Type.Int64()]
 
@@ -244,6 +259,26 @@ func createPayload(meta *types.Metadata, encodedCall []byte) (*Payload, error) {
 		}
 
 		signedExtensionName := extensions.SignedExtensionName(signedExtensionType.Path[len(signedExtensionType.Path)-1])
+
+		payloadMutatorFn, ok := PayloadMutatorFns[signedExtensionName]
+
+		if !ok {
+			return nil, ErrSignedExtensionTypeNotSupported.WithMsg("signed extension '%s'", signedExtensionName)
+		}
+
+		payloadMutatorFn(payload)
+	}
+
+	return payload, nil
+}
+
+// createPayloadV13 iterates over all signed extensions provided in the metadata V13 and
+// attempts to load and use a PayloadMutatorFn for each one.
+func createPayloadV13(meta *types.Metadata, payload *Payload) (*Payload, error) {
+
+	for _, signedExtension := range meta.AsMetadataV13.Extrinsic.SignedExtensions {
+
+		signedExtensionName := extensions.SignedExtensionName(signedExtension)
 
 		payloadMutatorFn, ok := PayloadMutatorFns[signedExtensionName]
 
