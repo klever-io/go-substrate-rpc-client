@@ -68,3 +68,9 @@ func WithGenesisHash(genesisHash types.Hash) SigningOption {
 		vals[GenesisHashSignedField] = genesisHash
 	}
 }
+
+func WithAppID(appID types.U32) SigningOption {
+	return func(vals SignedFieldValues) {
+		vals[AppIDSignedField] = appID
+	}
+}
