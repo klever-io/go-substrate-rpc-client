@@ -141,6 +141,7 @@ const (
 	SpecVersionSignedField           SignedFieldName = "spec_version"
 	TransactionVersionSignedField    SignedFieldName = "transaction_version"
 	GenesisHashSignedField           SignedFieldName = "genesis_hash"
+	AppIDSignedField                 SignedFieldName = "app_id"
 )
 
 // PayloadMutatorFn is the type used for mutating the Payload during creation.
@@ -216,6 +217,12 @@ var PayloadMutatorFns = map[extensions.SignedExtensionName]PayloadMutatorFn{
 		payload.SignedExtraFields = append(payload.SignedExtraFields, &SignedField{
 			Name:  GenesisHashSignedField,
 			Value: &types.Hash{},
+		})
+	},
+	extensions.CheckAppIdSignedExtension: func(payload *Payload) {
+		payload.SignedExtraFields = append(payload.SignedFields, &SignedField{
+			Name:  AppIDSignedField,
+			Value: types.U32(0),
 		})
 	},
 	// There's nothing that we can add in the payload or signature in the following cases, however, these are added to

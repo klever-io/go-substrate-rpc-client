@@ -20,4 +20,5 @@ const (
 	PrevalidateAttestsSignedExtension          SignedExtensionName = "PrevalidateAttests"
 	CheckNetworkMembershipSignedExtension      SignedExtensionName = "CheckNetworkMembership"
 	SetEvmOriginSignedExtension                SignedExtensionName = "SetEvmOrigin"
+	CheckAppIdSignedExtension                  SignedExtensionName = "CheckAppId"
 )
