@@ -19,4 +19,5 @@ const (
 	StorageWeightReclaimSignedExtension        SignedExtensionName = "StorageWeightReclaim"
 	PrevalidateAttestsSignedExtension          SignedExtensionName = "PrevalidateAttests"
 	CheckNetworkMembershipSignedExtension      SignedExtensionName = "CheckNetworkMembership"
+	SetEvmOriginSignedExtension                SignedExtensionName = "SetEvmOrigin"
 )
