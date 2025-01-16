@@ -17,24 +17,26 @@
 package state
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/client"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types/codec"
 )
 
 // GetMetadata returns the metadata at the given block
-func (s *state) GetMetadata(blockHash types.Hash) (*types.Metadata, error) {
-	return s.getMetadata(&blockHash)
+func (s *state) GetMetadata(ctx context.Context, blockHash types.Hash) (*types.Metadata, error) {
+	return s.getMetadata(ctx, &blockHash)
 }
 
 // GetMetadataLatest returns the latest metadata
-func (s *state) GetMetadataLatest() (*types.Metadata, error) {
-	return s.getMetadata(nil)
+func (s *state) GetMetadataLatest(ctx context.Context) (*types.Metadata, error) {
+	return s.getMetadata(ctx, nil)
 }
 
-func (s *state) getMetadata(blockHash *types.Hash) (*types.Metadata, error) {
+func (s *state) getMetadata(ctx context.Context, blockHash *types.Hash) (*types.Metadata, error) {
 	var res string
-	err := client.CallWithBlockHash(s.client, &res, "state_getMetadata", blockHash)
+	err := client.CallWithBlockHashContext(ctx, s.client, &res, "state_getMetadata", blockHash)
 	if err != nil {
 		return nil, err
 	}

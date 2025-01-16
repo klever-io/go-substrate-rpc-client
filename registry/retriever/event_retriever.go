@@ -1,6 +1,7 @@
 package retriever
 
 import (
+	"context"
 	"time"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v4/registry"
@@ -16,7 +17,7 @@ import (
 
 // EventRetriever is the interface used for retrieving and decoding events.
 type EventRetriever interface {
-	GetEvents(blockHash types.Hash) ([]*parser.Event, error)
+	GetEvents(ctx context.Context, blockHash types.Hash) ([]*parser.Event, error)
 }
 
 // eventRetriever implements the EventRetriever interface.
@@ -37,6 +38,7 @@ type eventRetriever struct {
 
 // NewEventRetriever creates a new EventRetriever.
 func NewEventRetriever(
+	ctx context.Context,
 	eventParser parser.EventParser,
 	eventProvider regState.EventProvider,
 	stateRPC state.State,
@@ -53,7 +55,7 @@ func NewEventRetriever(
 		eventParsingExecutor: eventParsingExecutor,
 	}
 
-	if err := retriever.updateInternalState(nil); err != nil {
+	if err := retriever.updateInternalState(ctx, nil); err != nil {
 		return nil, ErrInternalStateUpdate.Wrap(err)
 	}
 
@@ -67,6 +69,7 @@ func NewEventRetriever(
 // - exec.RetryableExecutor - used for retrieving event storage data.
 // - exec.RetryableExecutor - used for parsing events.
 func NewDefaultEventRetriever(
+	ctx context.Context,
 	eventProvider regState.EventProvider,
 	stateRPC state.State,
 	fieldOverrides ...registry.FieldOverride,
@@ -78,6 +81,7 @@ func NewDefaultEventRetriever(
 	eventParsingExecutor := exec.NewRetryableExecutor[[]*parser.Event](exec.WithMaxRetryCount(1))
 
 	return NewEventRetriever(
+		ctx,
 		eventParser,
 		eventProvider,
 		stateRPC,
@@ -91,13 +95,13 @@ func NewDefaultEventRetriever(
 //
 // Both the event storage data retrieval and the event parsing are handled via the exec.RetryableExecutor
 // in order to ensure retries in case of network errors or parsing errors due to an outdated event registry.
-func (e *eventRetriever) GetEvents(blockHash types.Hash) ([]*parser.Event, error) {
+func (e *eventRetriever) GetEvents(ctx context.Context, blockHash types.Hash) ([]*parser.Event, error) {
 	storageEvents, err := e.eventStorageExecutor.ExecWithFallback(
 		func() (*types.StorageDataRaw, error) {
 			return e.eventProvider.GetStorageEvents(e.meta, blockHash)
 		},
 		func() error {
-			return e.updateInternalState(&blockHash)
+			return e.updateInternalState(ctx, &blockHash)
 		},
 	)
 
@@ -110,7 +114,7 @@ func (e *eventRetriever) GetEvents(blockHash types.Hash) ([]*parser.Event, error
 			return e.eventParser.ParseEvents(e.eventRegistry, storageEvents)
 		},
 		func() error {
-			return e.updateInternalState(&blockHash)
+			return e.updateInternalState(ctx, &blockHash)
 		},
 	)
 
@@ -123,16 +127,16 @@ func (e *eventRetriever) GetEvents(blockHash types.Hash) ([]*parser.Event, error
 
 // updateInternalState will retrieve the metadata at the provided blockHash, if provided,
 // create an event registry based on this metadata and store both.
-func (e *eventRetriever) updateInternalState(blockHash *types.Hash) error {
+func (e *eventRetriever) updateInternalState(ctx context.Context, blockHash *types.Hash) error {
 	var (
 		meta *types.Metadata
 		err  error
 	)
 
 	if blockHash == nil {
-		meta, err = e.stateRPC.GetMetadataLatest()
+		meta, err = e.stateRPC.GetMetadataLatest(ctx)
 	} else {
-		meta, err = e.stateRPC.GetMetadata(*blockHash)
+		meta, err = e.stateRPC.GetMetadata(ctx, *blockHash)
 	}
 
 	if err != nil {

@@ -17,19 +17,20 @@
 package state
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestState_GetRuntimeVersionLatest(t *testing.T) {
-	rv, err := testState.GetRuntimeVersionLatest()
+	rv, err := testState.GetRuntimeVersionLatest(context.Background())
 	assert.NoError(t, err)
 	assert.Equal(t, &mockSrv.runtimeVersion, rv)
 }
 
 func TestState_GetRuntimeVersion(t *testing.T) {
-	rv, err := testState.GetRuntimeVersion(mockSrv.blockHashLatest)
+	rv, err := testState.GetRuntimeVersion(context.Background(), mockSrv.blockHashLatest)
 	assert.NoError(t, err)
 	assert.Equal(t, &mockSrv.runtimeVersion, rv)
 }

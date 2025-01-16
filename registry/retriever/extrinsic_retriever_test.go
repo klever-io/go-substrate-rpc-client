@@ -1,7 +1,10 @@
 package retriever
 
 import (
+	"context"
 	"errors"
+	"testing"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/registry"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/registry/exec"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/registry/test"
@@ -12,7 +15,6 @@ import (
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types/codec"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestExtrinsicRetriever_New(t *testing.T) {
@@ -59,6 +61,7 @@ func TestExtrinsicRetriever_New_InternalStateUpdateError(t *testing.T) {
 		Once()
 
 	res, err := NewExtrinsicRetriever(
+		context.Background(),
 		chainRPCMock,
 		stateRPCMock,
 		registryFactoryMock,
@@ -77,6 +80,7 @@ func TestExtrinsicRetriever_New_InternalStateUpdateError(t *testing.T) {
 		Once()
 
 	res, err = NewExtrinsicRetriever(
+		context.Background(),
 		chainRPCMock,
 		stateRPCMock,
 		registryFactoryMock,

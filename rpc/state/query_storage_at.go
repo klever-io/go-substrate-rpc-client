@@ -17,28 +17,30 @@
 package state
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/client"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 )
 
 // QueryStorageAt performs a low-level storage query
-func (s *state) QueryStorageAt(keys []types.StorageKey, block types.Hash) ([]types.StorageChangeSet, error) {
-	return s.queryStorageAt(keys, &block)
+func (s *state) QueryStorageAt(ctx context.Context, keys []types.StorageKey, block types.Hash) ([]types.StorageChangeSet, error) {
+	return s.queryStorageAt(ctx, keys, &block)
 }
 
 // QueryStorageAtLatest performs a low-level storage query
-func (s *state) QueryStorageAtLatest(keys []types.StorageKey) ([]types.StorageChangeSet, error) {
-	return s.queryStorageAt(keys, nil)
+func (s *state) QueryStorageAtLatest(ctx context.Context, keys []types.StorageKey) ([]types.StorageChangeSet, error) {
+	return s.queryStorageAt(ctx, keys, nil)
 }
 
-func (s *state) queryStorageAt(keys []types.StorageKey, block *types.Hash) ([]types.StorageChangeSet, error) {
+func (s *state) queryStorageAt(ctx context.Context, keys []types.StorageKey, block *types.Hash) ([]types.StorageChangeSet, error) {
 	hexKeys := make([]string, len(keys))
 	for i, key := range keys {
 		hexKeys[i] = key.Hex()
 	}
 
 	var res []types.StorageChangeSet
-	err := client.CallWithBlockHash(s.client, &res, "state_queryStorageAt", block, hexKeys)
+	err := client.CallWithBlockHashContext(ctx, s.client, &res, "state_queryStorageAt", block, hexKeys)
 	if err != nil {
 		return nil, err
 	}

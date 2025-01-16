@@ -17,6 +17,8 @@
 package state
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/client"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types/codec"
@@ -24,8 +26,8 @@ import (
 
 // GetStorage retreives the stored data and decodes them into the provided interface. Ok is true if the value is not
 // empty.
-func (s *state) GetStorage(key types.StorageKey, target interface{}, blockHash types.Hash) (ok bool, err error) {
-	raw, err := s.getStorageRaw(key, &blockHash)
+func (s *state) GetStorage(ctx context.Context, key types.StorageKey, target interface{}, blockHash types.Hash) (ok bool, err error) {
+	raw, err := s.getStorageRaw(ctx, key, &blockHash)
 	if err != nil {
 		return false, err
 	}
@@ -37,8 +39,8 @@ func (s *state) GetStorage(key types.StorageKey, target interface{}, blockHash t
 
 // GetStorageLatest retreives the stored data for the latest block height and decodes them into the provided interface.
 // Ok is true if the value is not empty.
-func (s *state) GetStorageLatest(key types.StorageKey, target interface{}) (ok bool, err error) {
-	raw, err := s.getStorageRaw(key, nil)
+func (s *state) GetStorageLatest(ctx context.Context, key types.StorageKey, target interface{}) (ok bool, err error) {
+	raw, err := s.getStorageRaw(ctx, key, nil)
 	if err != nil {
 		return false, err
 	}
@@ -49,18 +51,18 @@ func (s *state) GetStorageLatest(key types.StorageKey, target interface{}) (ok b
 }
 
 // GetStorageRaw retreives the stored data as raw bytes, without decoding them
-func (s *state) GetStorageRaw(key types.StorageKey, blockHash types.Hash) (*types.StorageDataRaw, error) {
-	return s.getStorageRaw(key, &blockHash)
+func (s *state) GetStorageRaw(ctx context.Context, key types.StorageKey, blockHash types.Hash) (*types.StorageDataRaw, error) {
+	return s.getStorageRaw(ctx, key, &blockHash)
 }
 
 // GetStorageRawLatest retreives the stored data for the latest block height as raw bytes, without decoding them
-func (s *state) GetStorageRawLatest(key types.StorageKey) (*types.StorageDataRaw, error) {
-	return s.getStorageRaw(key, nil)
+func (s *state) GetStorageRawLatest(ctx context.Context, key types.StorageKey) (*types.StorageDataRaw, error) {
+	return s.getStorageRaw(ctx, key, nil)
 }
 
-func (s *state) getStorageRaw(key types.StorageKey, blockHash *types.Hash) (*types.StorageDataRaw, error) {
+func (s *state) getStorageRaw(ctx context.Context, key types.StorageKey, blockHash *types.Hash) (*types.StorageDataRaw, error) {
 	var res string
-	err := client.CallWithBlockHash(s.client, &res, "state_getStorage", blockHash, key.Hex())
+	err := client.CallWithBlockHashContext(ctx, s.client, &res, "state_getStorage", blockHash, key.Hex())
 	if err != nil {
 		return nil, err
 	}

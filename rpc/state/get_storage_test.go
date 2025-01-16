@@ -17,6 +17,7 @@
 package state
 
 import (
+	"context"
 	"testing"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
@@ -26,7 +27,7 @@ import (
 
 func TestState_GetStorageLatest(t *testing.T) {
 	var decoded types.U64
-	ok, err := testState.GetStorageLatest(codec.MustHexDecodeString(mockSrv.storageKeyHex), &decoded)
+	ok, err := testState.GetStorageLatest(context.Background(), codec.MustHexDecodeString(mockSrv.storageKeyHex), &decoded)
 	assert.NoError(t, err)
 	assert.True(t, ok)
 	assert.Equal(t, types.U64(0x5d892db8), decoded)
@@ -34,7 +35,7 @@ func TestState_GetStorageLatest(t *testing.T) {
 
 func TestState_GetStorage(t *testing.T) {
 	var decoded types.U64
-	ok, err := testState.GetStorage(codec.MustHexDecodeString(mockSrv.storageKeyHex), &decoded, mockSrv.blockHashLatest)
+	ok, err := testState.GetStorage(context.Background(), codec.MustHexDecodeString(mockSrv.storageKeyHex), &decoded, mockSrv.blockHashLatest)
 	assert.NoError(t, err)
 	assert.True(t, ok)
 	assert.Equal(t, types.U64(0x5d892db8), decoded)
@@ -42,19 +43,19 @@ func TestState_GetStorage(t *testing.T) {
 
 func TestState_GetStorageEmpty(t *testing.T) {
 	var decoded types.U64
-	ok, err := testState.GetStorage([]byte{0xab}, &decoded, mockSrv.blockHashLatest)
+	ok, err := testState.GetStorage(context.Background(), []byte{0xab}, &decoded, mockSrv.blockHashLatest)
 	assert.NoError(t, err)
 	assert.False(t, ok)
 }
 
 func TestState_GetStorageRawLatest(t *testing.T) {
-	data, err := testState.GetStorageRawLatest(codec.MustHexDecodeString(mockSrv.storageKeyHex))
+	data, err := testState.GetStorageRawLatest(context.Background(), codec.MustHexDecodeString(mockSrv.storageKeyHex))
 	assert.NoError(t, err)
 	assert.Equal(t, mockSrv.storageDataHex, data.Hex())
 }
 
 func TestState_GetStorageRaw(t *testing.T) {
-	data, err := testState.GetStorageRaw(codec.MustHexDecodeString(mockSrv.storageKeyHex), mockSrv.blockHashLatest)
+	data, err := testState.GetStorageRaw(context.Background(), codec.MustHexDecodeString(mockSrv.storageKeyHex), mockSrv.blockHashLatest)
 	assert.NoError(t, err)
 	assert.Equal(t, mockSrv.storageDataHex, data.Hex())
 }

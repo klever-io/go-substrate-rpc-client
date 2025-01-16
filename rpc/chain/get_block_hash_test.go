@@ -17,6 +17,7 @@
 package chain
 
 import (
+	"context"
 	"testing"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
@@ -24,19 +25,19 @@ import (
 )
 
 func TestChain_GetBlockHash(t *testing.T) {
-	res, err := testChain.GetBlockHash(1)
+	res, err := testChain.GetBlockHash(context.Background(), 1)
 	assert.NoError(t, err)
 
-	blk, err := testChain.GetBlock(res)
+	blk, err := testChain.GetBlock(context.Background(), res)
 	assert.NoError(t, err)
 	assert.Equal(t, types.BlockNumber(1), blk.Block.Header.Number)
 }
 
 func TestChain_GetBlockHashLatest(t *testing.T) {
-	res, err := testChain.GetBlockHashLatest()
+	res, err := testChain.GetBlockHashLatest(context.Background())
 	assert.NoError(t, err)
 
-	blk, err := testChain.GetBlock(res)
+	blk, err := testChain.GetBlock(context.Background(), res)
 	assert.NoError(t, err)
 	assert.True(t, blk.Block.Header.Number > 0)
 }

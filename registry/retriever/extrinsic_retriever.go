@@ -1,6 +1,7 @@
 package retriever
 
 import (
+	"context"
 	"time"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v4/registry"
@@ -17,7 +18,7 @@ import (
 // ExtrinsicRetriever is the interface used for retrieving and decoding extrinsic information
 // from a particular block.
 type ExtrinsicRetriever interface {
-	GetExtrinsics(blockHash types.Hash) ([]*registry.DecodedExtrinsic, error)
+	GetExtrinsics(ctx context.Context, blockHash types.Hash) ([]*registry.DecodedExtrinsic, error)
 }
 
 // extrinsicRetriever implements the ExtrinsicRetriever interface.
@@ -35,6 +36,7 @@ type extrinsicRetriever struct {
 
 // NewExtrinsicRetriever creates a new ExtrinsicRetriever.
 func NewExtrinsicRetriever(
+	ctx context.Context,
 	chainRPC chain.Chain,
 	stateRPC state.State,
 	registryFactory registry.Factory,
@@ -58,6 +60,7 @@ func NewExtrinsicRetriever(
 
 // NewDefaultExtrinsicRetriever returns an ExtrinsicRetriever with default values for the factory and executors.
 func NewDefaultExtrinsicRetriever(
+	ctx context.Context,
 	chainRPC chain.Chain,
 	stateRPC state.State,
 	fieldOverrides ...registry.FieldOverride,
@@ -68,6 +71,7 @@ func NewDefaultExtrinsicRetriever(
 	extrinsicDecodingExecutor := exec.NewRetryableExecutor[[]*registry.DecodedExtrinsic](exec.WithMaxRetryCount(1))
 
 	return NewExtrinsicRetriever(
+		ctx,
 		chainRPC,
 		stateRPC,
 		registryFactory,
@@ -80,10 +84,10 @@ func NewDefaultExtrinsicRetriever(
 //
 // Both the block retrieval and the extrinsic parsing are handled via the exec.RetryableExecutor
 // in order to ensure retries in case of network errors or parsing errors due to an outdated extrinsic decoder.
-func (e *extrinsicRetriever) GetExtrinsics(blockHash types.Hash) ([]*registry.DecodedExtrinsic, error) {
+func (e *extrinsicRetriever) GetExtrinsics(ctx context.Context, blockHash types.Hash) ([]*registry.DecodedExtrinsic, error) {
 	block, err := e.chainExecutor.ExecWithFallback(
 		func() (*block.SignedBlock, error) {
-			return e.chainRPC.GetBlock(blockHash)
+			return e.chainRPC.GetBlock(ctx, blockHash)
 		},
 		func() error {
 			return nil

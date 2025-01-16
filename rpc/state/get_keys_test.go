@@ -17,6 +17,7 @@
 package state
 
 import (
+	"context"
 	"testing"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
@@ -26,14 +27,14 @@ import (
 
 func TestState_GetKeysLatest(t *testing.T) {
 	prefix := types.NewStorageKey(codec.MustHexDecodeString(mockSrv.storageKeyHex))[:8]
-	keys, err := testState.GetKeysLatest(prefix)
+	keys, err := testState.GetKeysLatest(context.Background(), prefix)
 	assert.NoError(t, err)
 	assert.Equal(t, []types.StorageKey{codec.MustHexDecodeString(mockSrv.storageKeyHex)}, keys)
 }
 
 func TestState_GetKeys(t *testing.T) {
 	prefix := types.NewStorageKey(codec.MustHexDecodeString(mockSrv.storageKeyHex))[:8]
-	keys, err := testState.GetKeys(prefix, mockSrv.blockHashLatest)
+	keys, err := testState.GetKeys(context.Background(), prefix, mockSrv.blockHashLatest)
 	assert.NoError(t, err)
 	assert.Equal(t, []types.StorageKey{codec.MustHexDecodeString(mockSrv.storageKeyHex)}, keys)
 }

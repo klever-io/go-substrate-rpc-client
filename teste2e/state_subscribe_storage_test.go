@@ -17,6 +17,7 @@
 package teste2e
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -36,13 +37,13 @@ func TestState_SubscribeStorage_EventsRaw(t *testing.T) {
 	api, err := gsrpc.NewSubstrateAPI(config.Default().RPCURL)
 	assert.NoError(t, err)
 
-	meta, err := api.RPC.State.GetMetadataLatest()
+	meta, err := api.RPC.State.GetMetadataLatest(context.Background())
 	assert.NoError(t, err)
 
 	key, err := types.CreateStorageKey(meta, "System", "Events", nil)
 	assert.NoError(t, err)
 
-	sub, err := api.RPC.State.SubscribeStorageRaw([]types.StorageKey{key})
+	sub, err := api.RPC.State.SubscribeStorageRaw(context.Background(), []types.StorageKey{key})
 	assert.NoError(t, err)
 	defer sub.Unsubscribe()
 
@@ -73,13 +74,13 @@ func TestState_SubscribeStorage_Events(t *testing.T) {
 	api, err := gsrpc.NewSubstrateAPI(config.Default().RPCURL)
 	assert.NoError(t, err)
 
-	meta, err := api.RPC.State.GetMetadataLatest()
+	meta, err := api.RPC.State.GetMetadataLatest(context.Background())
 	assert.NoError(t, err)
 
 	key, err := types.CreateStorageKey(meta, "System", "Events", nil)
 	assert.NoError(t, err)
 
-	sub, err := api.RPC.State.SubscribeStorageRaw([]types.StorageKey{key})
+	sub, err := api.RPC.State.SubscribeStorageRaw(context.Background(), []types.StorageKey{key})
 	assert.NoError(t, err)
 	defer sub.Unsubscribe()
 

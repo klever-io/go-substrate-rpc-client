@@ -1,6 +1,7 @@
 package retriever
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -35,6 +36,7 @@ func TestEventRetriever_New(t *testing.T) {
 		Once()
 
 	res, err := NewEventRetriever(
+		context.Background(),
 		eventParserMock,
 		eventProviderMock,
 		stateRPCMock,
@@ -61,6 +63,7 @@ func TestEventRetriever_New_InternalStateUpdateError(t *testing.T) {
 		Once()
 
 	res, err := NewEventRetriever(
+		context.Background(),
 		eventParserMock,
 		eventProviderMock,
 		stateRPCMock,
@@ -105,7 +108,7 @@ func TestEventRetriever_NewDefault(t *testing.T) {
 		Return(latestMeta, nil).
 		Once()
 
-	res, err := NewDefaultEventRetriever(eventProviderMock, stateRPCMock)
+	res, err := NewDefaultEventRetriever(context.Background(), eventProviderMock, stateRPCMock)
 	assert.NoError(t, err)
 	assert.IsType(t, &eventRetriever{}, res)
 

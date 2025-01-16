@@ -19,53 +19,55 @@
 package state
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/client"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 )
 
 type State interface {
-	GetStorage(key types.StorageKey, target interface{}, blockHash types.Hash) (ok bool, err error)
-	GetStorageLatest(key types.StorageKey, target interface{}) (ok bool, err error)
-	GetStorageRaw(key types.StorageKey, blockHash types.Hash) (*types.StorageDataRaw, error)
-	GetStorageRawLatest(key types.StorageKey) (*types.StorageDataRaw, error)
+	GetStorage(ctx context.Context, key types.StorageKey, target interface{}, blockHash types.Hash) (ok bool, err error)
+	GetStorageLatest(ctx context.Context, key types.StorageKey, target interface{}) (ok bool, err error)
+	GetStorageRaw(ctx context.Context, key types.StorageKey, blockHash types.Hash) (*types.StorageDataRaw, error)
+	GetStorageRawLatest(ctx context.Context, key types.StorageKey) (*types.StorageDataRaw, error)
 
-	GetChildStorageSize(childStorageKey, key types.StorageKey, blockHash types.Hash) (types.U64, error)
-	GetChildStorageSizeLatest(childStorageKey, key types.StorageKey) (types.U64, error)
-	GetChildStorage(childStorageKey, key types.StorageKey, target interface{}, blockHash types.Hash) (ok bool, err error)
-	GetChildStorageLatest(childStorageKey, key types.StorageKey, target interface{}) (ok bool, err error)
-	GetChildStorageRaw(childStorageKey, key types.StorageKey, blockHash types.Hash) (*types.StorageDataRaw, error)
-	GetChildStorageRawLatest(childStorageKey, key types.StorageKey) (*types.StorageDataRaw, error)
+	GetChildStorageSize(ctx context.Context, childStorageKey, key types.StorageKey, blockHash types.Hash) (types.U64, error)
+	GetChildStorageSizeLatest(ctx context.Context, childStorageKey, key types.StorageKey) (types.U64, error)
+	GetChildStorage(ctx context.Context, childStorageKey, key types.StorageKey, target interface{}, blockHash types.Hash) (ok bool, err error)
+	GetChildStorageLatest(ctx context.Context, childStorageKey, key types.StorageKey, target interface{}) (ok bool, err error)
+	GetChildStorageRaw(ctx context.Context, childStorageKey, key types.StorageKey, blockHash types.Hash) (*types.StorageDataRaw, error)
+	GetChildStorageRawLatest(ctx context.Context, childStorageKey, key types.StorageKey) (*types.StorageDataRaw, error)
 
-	GetMetadata(blockHash types.Hash) (*types.Metadata, error)
-	GetMetadataLatest() (*types.Metadata, error)
+	GetMetadata(ctx context.Context, blockHash types.Hash) (*types.Metadata, error)
+	GetMetadataLatest(ctx context.Context) (*types.Metadata, error)
 
-	GetStorageHash(key types.StorageKey, blockHash types.Hash) (types.Hash, error)
-	GetStorageHashLatest(key types.StorageKey) (types.Hash, error)
+	GetStorageHash(ctx context.Context, key types.StorageKey, blockHash types.Hash) (types.Hash, error)
+	GetStorageHashLatest(ctx context.Context, key types.StorageKey) (types.Hash, error)
 
-	SubscribeStorageRaw(keys []types.StorageKey) (*StorageSubscription, error)
+	SubscribeStorageRaw(ctx context.Context, keys []types.StorageKey) (*StorageSubscription, error)
 
-	GetRuntimeVersion(blockHash types.Hash) (*types.RuntimeVersion, error)
-	GetRuntimeVersionLatest() (*types.RuntimeVersion, error)
+	GetRuntimeVersion(ctx context.Context, blockHash types.Hash) (*types.RuntimeVersion, error)
+	GetRuntimeVersionLatest(ctx context.Context) (*types.RuntimeVersion, error)
 
-	GetChildKeys(childStorageKey, prefix types.StorageKey, blockHash types.Hash) ([]types.StorageKey, error)
-	GetChildKeysLatest(childStorageKey, prefix types.StorageKey) ([]types.StorageKey, error)
+	GetChildKeys(ctx context.Context, childStorageKey, prefix types.StorageKey, blockHash types.Hash) ([]types.StorageKey, error)
+	GetChildKeysLatest(ctx context.Context, childStorageKey, prefix types.StorageKey) ([]types.StorageKey, error)
 
-	SubscribeRuntimeVersion() (*RuntimeVersionSubscription, error)
+	SubscribeRuntimeVersion(ctx context.Context) (*RuntimeVersionSubscription, error)
 
-	QueryStorage(keys []types.StorageKey, startBlock types.Hash, block types.Hash) ([]types.StorageChangeSet, error)
-	QueryStorageLatest(keys []types.StorageKey, startBlock types.Hash) ([]types.StorageChangeSet, error)
+	QueryStorage(ctx context.Context, keys []types.StorageKey, startBlock types.Hash, block types.Hash) ([]types.StorageChangeSet, error)
+	QueryStorageLatest(ctx context.Context, keys []types.StorageKey, startBlock types.Hash) ([]types.StorageChangeSet, error)
 
-	QueryStorageAt(keys []types.StorageKey, block types.Hash) ([]types.StorageChangeSet, error)
-	QueryStorageAtLatest(keys []types.StorageKey) ([]types.StorageChangeSet, error)
+	QueryStorageAt(ctx context.Context, keys []types.StorageKey, block types.Hash) ([]types.StorageChangeSet, error)
+	QueryStorageAtLatest(ctx context.Context, keys []types.StorageKey) ([]types.StorageChangeSet, error)
 
-	GetKeys(prefix types.StorageKey, blockHash types.Hash) ([]types.StorageKey, error)
-	GetKeysLatest(prefix types.StorageKey) ([]types.StorageKey, error)
+	GetKeys(ctx context.Context, prefix types.StorageKey, blockHash types.Hash) ([]types.StorageKey, error)
+	GetKeysLatest(ctx context.Context, prefix types.StorageKey) ([]types.StorageKey, error)
 
-	GetStorageSize(key types.StorageKey, blockHash types.Hash) (types.U64, error)
-	GetStorageSizeLatest(key types.StorageKey) (types.U64, error)
+	GetStorageSize(ctx context.Context, key types.StorageKey, blockHash types.Hash) (types.U64, error)
+	GetStorageSizeLatest(ctx context.Context, key types.StorageKey) (types.U64, error)
 
-	GetChildStorageHash(childStorageKey, key types.StorageKey, blockHash types.Hash) (types.Hash, error)
-	GetChildStorageHashLatest(childStorageKey, key types.StorageKey) (types.Hash, error)
+	GetChildStorageHash(ctx context.Context, childStorageKey, key types.StorageKey, blockHash types.Hash) (types.Hash, error)
+	GetChildStorageHashLatest(ctx context.Context, childStorageKey, key types.StorageKey) (types.Hash, error)
 }
 
 // state exposes methods for querying state

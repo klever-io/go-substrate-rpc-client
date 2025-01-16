@@ -23,7 +23,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime"
 	"net"
 	"net/http"
@@ -33,6 +32,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/rs/cors"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 const (
@@ -107,14 +107,16 @@ var DefaultHTTPTimeouts = HTTPTimeouts{
 // DialHTTPWithClient creates a new RPC client that connects to an RPC server over HTTP
 // using the provided HTTP Client.
 func DialHTTPWithClient(endpoint string, client *http.Client) (*Client, error) {
-	req, err := http.NewRequest(http.MethodPost, endpoint, nil)
+	initctx := context.Background()
+	client.Transport = otelhttp.NewTransport(http.DefaultTransport)
+
+	req, err := http.NewRequestWithContext(initctx, http.MethodPost, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", contentType)
 	req.Header.Set("Accept", contentType)
 
-	initctx := context.Background()
 	return newClient(initctx, func(context.Context) (ServerCodec, error) {
 		return &httpConn{client: client, req: req, closed: make(chan interface{})}, nil
 	})
@@ -122,6 +124,7 @@ func DialHTTPWithClient(endpoint string, client *http.Client) (*Client, error) {
 
 // DialHTTP creates a new RPC client that connects to an RPC server over HTTP.
 func DialHTTP(endpoint string) (*Client, error) {
+
 	return DialHTTPWithClient(endpoint, new(http.Client))
 }
 
@@ -172,7 +175,7 @@ func (hc *httpConn) doRequest(ctx context.Context, msg interface{}) (io.ReadClos
 		return nil, err
 	}
 	req := hc.req.WithContext(ctx)
-	req.Body = ioutil.NopCloser(bytes.NewReader(body))
+	req.Body = io.NopCloser(bytes.NewReader(body))
 	req.ContentLength = int64(len(body))
 
 	resp, err := hc.client.Do(req)

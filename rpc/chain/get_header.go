@@ -17,23 +17,25 @@
 package chain
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/client"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 )
 
 // GetHeader retrieves the header for the specific block
-func (c *chain) GetHeader(blockHash types.Hash) (*types.Header, error) {
-	return c.getHeader(&blockHash)
+func (c *chain) GetHeader(ctx context.Context, blockHash types.Hash) (*types.Header, error) {
+	return c.getHeader(ctx, &blockHash)
 }
 
 // GetHeaderLatest retrieves the header of the latest block
-func (c *chain) GetHeaderLatest() (*types.Header, error) {
-	return c.getHeader(nil)
+func (c *chain) GetHeaderLatest(ctx context.Context) (*types.Header, error) {
+	return c.getHeader(ctx, nil)
 }
 
-func (c *chain) getHeader(blockHash *types.Hash) (*types.Header, error) {
+func (c *chain) getHeader(ctx context.Context, blockHash *types.Hash) (*types.Header, error) {
 	var Header types.Header
-	err := client.CallWithBlockHash(c.client, &Header, "chain_getHeader", blockHash)
+	err := client.CallWithBlockHashContext(ctx, c.client, &Header, "chain_getHeader", blockHash)
 	if err != nil {
 		return nil, err
 	}

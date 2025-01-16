@@ -17,23 +17,25 @@
 package state
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/client"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 )
 
 // GetStorageHash retreives the storage hash for the given key
-func (s *state) GetStorageHash(key types.StorageKey, blockHash types.Hash) (types.Hash, error) {
-	return s.getStorageHash(key, &blockHash)
+func (s *state) GetStorageHash(ctx context.Context, key types.StorageKey, blockHash types.Hash) (types.Hash, error) {
+	return s.getStorageHash(ctx, key, &blockHash)
 }
 
 // GetStorageHashLatest retreives the storage hash for the given key for the latest block height
-func (s *state) GetStorageHashLatest(key types.StorageKey) (types.Hash, error) {
-	return s.getStorageHash(key, nil)
+func (s *state) GetStorageHashLatest(ctx context.Context, key types.StorageKey) (types.Hash, error) {
+	return s.getStorageHash(ctx, key, nil)
 }
 
-func (s *state) getStorageHash(key types.StorageKey, blockHash *types.Hash) (types.Hash, error) {
+func (s *state) getStorageHash(ctx context.Context, key types.StorageKey, blockHash *types.Hash) (types.Hash, error) {
 	var res string
-	err := client.CallWithBlockHash(s.client, &res, "state_getStorageHash", blockHash, key.Hex())
+	err := client.CallWithBlockHashContext(ctx, s.client, &res, "state_getStorageHash", blockHash, key.Hex())
 	if err != nil {
 		return types.Hash{}, err
 	}

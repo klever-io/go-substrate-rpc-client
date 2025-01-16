@@ -19,14 +19,16 @@
 package mmr
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/client"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 )
 
 // MMR exposes methods for retrieval of MMR data
 type MMR interface {
-	GenerateProof(leafIndex uint64, blockHash types.Hash) (types.GenerateMMRProofResponse, error)
-	GenerateProofLatest(leafIndex uint64) (types.GenerateMMRProofResponse, error)
+	GenerateProof(ctx context.Context, leafIndex uint64, blockHash types.Hash) (types.GenerateMMRProofResponse, error)
+	GenerateProofLatest(ctx context.Context, leafIndex uint64) (types.GenerateMMRProofResponse, error)
 }
 
 type mmr struct {
