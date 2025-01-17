@@ -19,13 +19,15 @@
 package beefy
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/client"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 )
 
 type Beefy interface {
-	GetFinalizedHead() (types.Hash, error)
-	SubscribeJustifications() (*JustificationsSubscription, error)
+	GetFinalizedHead(ctx context.Context) (types.Hash, error)
+	SubscribeJustifications(ctx context.Context) (*JustificationsSubscription, error)
 }
 
 // Beefy exposes methods for retrieval of chain data

@@ -62,7 +62,7 @@ func (s *RuntimeVersionSubscription) Unsubscribe() {
 
 // SubscribeRuntimeVersion subscribes the runtime version, returning a subscription that will
 // receive server notifications containing the RuntimeVersion.
-func (s *state) SubscribeRuntimeVersion() (
+func (s *state) SubscribeRuntimeVersion(ctx context.Context) (
 	*RuntimeVersionSubscription, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), config.Default().SubscribeTimeout)
 	defer cancel()

@@ -17,20 +17,22 @@
 package chain
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 )
 
 // GetBlockHash returns the block hash for a specific block height
-func (c *chain) GetBlockHash(blockNumber uint64) (types.Hash, error) {
-	return c.getBlockHash(&blockNumber)
+func (c *chain) GetBlockHash(ctx context.Context, blockNumber uint64) (types.Hash, error) {
+	return c.getBlockHash(ctx, &blockNumber)
 }
 
 // GetBlockHashLatest returns the latest block hash
-func (c *chain) GetBlockHashLatest() (types.Hash, error) {
-	return c.getBlockHash(nil)
+func (c *chain) GetBlockHashLatest(ctx context.Context) (types.Hash, error) {
+	return c.getBlockHash(ctx, nil)
 }
 
-func (c *chain) getBlockHash(blockNumber *uint64) (types.Hash, error) {
+func (c *chain) getBlockHash(ctx context.Context, blockNumber *uint64) (types.Hash, error) {
 	var res string
 	var err error
 

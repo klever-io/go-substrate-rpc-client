@@ -37,6 +37,7 @@ func TestExtrinsicRetriever_New(t *testing.T) {
 		Once()
 
 	res, err := NewExtrinsicRetriever(
+		context.Background(),
 		chainRPCMock,
 		stateRPCMock,
 		registryFactoryMock,
@@ -104,6 +105,7 @@ func TestExtrinsicRetriever_NewDefault(t *testing.T) {
 		Return(&meta, nil).
 		Once()
 	res, err := NewDefaultExtrinsicRetriever(
+		context.Background(),
 		chainRPCMock,
 		stateRPCMock,
 	)
@@ -135,6 +137,7 @@ func TestExtrinsicRetriever_GetExtrinsics(t *testing.T) {
 		Once()
 
 	extRet, err := NewExtrinsicRetriever(
+		context.Background(),
 		chainRPCMock,
 		stateRPCMock,
 		registryFactoryMock,
@@ -197,7 +200,7 @@ func TestExtrinsicRetriever_GetExtrinsics(t *testing.T) {
 			},
 		).Return(decodedExtrinsics, nil)
 
-	res, err := extRet.GetExtrinsics(blockHash)
+	res, err := extRet.GetExtrinsics(context.Background(), blockHash)
 	assert.NoError(t, err)
 	assert.Equal(t, decodedExtrinsics, res)
 }
@@ -226,6 +229,7 @@ func TestExtrinsicRetriever_GetExtrinsics_BlockRetrievalError(t *testing.T) {
 		Once()
 
 	extRet, err := NewExtrinsicRetriever(
+		context.Background(),
 		chainRPCMock,
 		stateRPCMock,
 		registryFactoryMock,
@@ -257,7 +261,7 @@ func TestExtrinsicRetriever_GetExtrinsics_BlockRetrievalError(t *testing.T) {
 			},
 		).Return(signedBlock, blockRetrievalError)
 
-	res, err := extRet.GetExtrinsics(blockHash)
+	res, err := extRet.GetExtrinsics(context.Background(), blockHash)
 	assert.ErrorIs(t, err, ErrBlockRetrieval)
 	assert.Nil(t, res)
 }
@@ -286,6 +290,7 @@ func TestExtrinsicRetriever_GetExtrinsics_ExtrinsicDecodeError(t *testing.T) {
 		Once()
 
 	extRet, err := NewExtrinsicRetriever(
+		context.Background(),
 		chainRPCMock,
 		stateRPCMock,
 		registryFactoryMock,
@@ -342,7 +347,7 @@ func TestExtrinsicRetriever_GetExtrinsics_ExtrinsicDecodeError(t *testing.T) {
 			},
 		).Return(decodedExtrinsics, extrinsicDecodeError)
 
-	res, err := extRet.GetExtrinsics(blockHash)
+	res, err := extRet.GetExtrinsics(context.Background(), blockHash)
 	assert.ErrorIs(t, err, ErrExtrinsicDecoding)
 	assert.Nil(t, res)
 }

@@ -17,11 +17,13 @@
 package chain
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 )
 
 // GetFinalizedHead returns the hash of the last finalized block in the canon chain
-func (c *chain) GetFinalizedHead() (types.Hash, error) {
+func (c *chain) GetFinalizedHead(ctx context.Context) (types.Hash, error) {
 	var res string
 
 	err := c.client.Call(&res, "chain_getFinalizedHead")

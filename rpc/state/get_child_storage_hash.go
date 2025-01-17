@@ -29,7 +29,7 @@ func (s *state) GetChildStorageHash(ctx context.Context, childStorageKey, key ty
 }
 
 // GetChildStorageHashLatest retreives the child storage hash for the given key for the latest block height
-func (s *state) GetChildStorageHashLatest(childStorageKey, key types.StorageKey) (types.Hash, error) {
+func (s *state) GetChildStorageHashLatest(cxt context.Context, childStorageKey, key types.StorageKey) (types.Hash, error) {
 	return s.getChildStorageHash(context.Background(), childStorageKey, key, nil)
 }
 

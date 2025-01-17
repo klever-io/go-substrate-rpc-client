@@ -51,7 +51,7 @@ func NewExtrinsicRetriever(
 		extrinsicDecodingExecutor: extrinsicDecodingExecutor,
 	}
 
-	if err := retriever.updateInternalState(nil); err != nil {
+	if err := retriever.updateInternalState(ctx, nil); err != nil {
 		return nil, ErrInternalStateUpdate.Wrap(err)
 	}
 
@@ -103,7 +103,7 @@ func (e *extrinsicRetriever) GetExtrinsics(ctx context.Context, blockHash types.
 			return block.DecodeExtrinsics(e.extrinsicDecoder)
 		},
 		func() error {
-			return e.updateInternalState(&blockHash)
+			return e.updateInternalState(ctx, &blockHash)
 		},
 	)
 
@@ -116,16 +116,16 @@ func (e *extrinsicRetriever) GetExtrinsics(ctx context.Context, blockHash types.
 
 // updateInternalState will retrieve the metadata at the provided blockHash, if provided,
 // create an extrinsic decoder based on this metadata and store both.
-func (e *extrinsicRetriever) updateInternalState(blockHash *types.Hash) error {
+func (e *extrinsicRetriever) updateInternalState(ctx context.Context, blockHash *types.Hash) error {
 	var (
 		meta *types.Metadata
 		err  error
 	)
 
 	if blockHash == nil {
-		meta, err = e.stateRPC.GetMetadataLatest()
+		meta, err = e.stateRPC.GetMetadataLatest(ctx)
 	} else {
-		meta, err = e.stateRPC.GetMetadata(*blockHash)
+		meta, err = e.stateRPC.GetMetadata(ctx, *blockHash)
 	}
 
 	if err != nil {
