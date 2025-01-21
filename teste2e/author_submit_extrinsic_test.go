@@ -17,8 +17,10 @@
 package teste2e
 
 import (
-	"github.com/centrifuge/go-substrate-rpc-client/v4/types/extrinsic"
+	"context"
 	"testing"
+
+	"github.com/centrifuge/go-substrate-rpc-client/v4/types/extrinsic"
 
 	gsrpc "github.com/centrifuge/go-substrate-rpc-client/v4"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/config"
@@ -32,17 +34,17 @@ func TestChain_Events(t *testing.T) {
 	api, err := gsrpc.NewSubstrateAPI(targetURL)
 	assert.NoError(t, err)
 
-	meta, err := api.RPC.State.GetMetadataLatest()
+	meta, err := api.RPC.State.GetMetadataLatest(context.Background())
 	assert.NoError(t, err)
 
 	key, err := types.CreateStorageKey(meta, "System", "Events", nil)
 	assert.NoError(t, err)
 
 	blockNUmber := uint64(0) // Replace with desired block to parse events
-	bh, err := api.RPC.Chain.GetBlockHash(blockNUmber)
+	bh, err := api.RPC.Chain.GetBlockHash(context.Background(), blockNUmber)
 	assert.NoError(t, err)
 
-	raw, err := api.RPC.State.GetStorageRaw(key, bh)
+	raw, err := api.RPC.State.GetStorageRaw(context.Background(), key, bh)
 	assert.NoError(t, err)
 
 	events := types.EventRecords{}
@@ -63,7 +65,7 @@ func TestChain_SubmitExtrinsic(t *testing.T) {
 	api, err := gsrpc.NewSubstrateAPI(config.Default().RPCURL)
 	assert.NoError(t, err)
 
-	meta, err := api.RPC.State.GetMetadataLatest()
+	meta, err := api.RPC.State.GetMetadataLatest(context.Background())
 	assert.NoError(t, err)
 
 	bob, err := types.NewMultiAddressFromHexAccountID("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48")
@@ -74,17 +76,17 @@ func TestChain_SubmitExtrinsic(t *testing.T) {
 
 	ext := extrinsic.NewExtrinsic(c)
 
-	genesisHash, err := api.RPC.Chain.GetBlockHash(0)
+	genesisHash, err := api.RPC.Chain.GetBlockHash(context.Background(), 0)
 	assert.NoError(t, err)
 
-	rv, err := api.RPC.State.GetRuntimeVersionLatest()
+	rv, err := api.RPC.State.GetRuntimeVersionLatest(context.Background())
 	assert.NoError(t, err)
 
 	key, err := types.CreateStorageKey(meta, "System", "Account", from.PublicKey)
 	assert.NoError(t, err)
 
 	var accountInfo types.AccountInfo
-	ok, err = api.RPC.State.GetStorageLatest(key, &accountInfo)
+	ok, err = api.RPC.State.GetStorageLatest(context.Background(), key, &accountInfo)
 	assert.NoError(t, err)
 	assert.True(t, ok)
 

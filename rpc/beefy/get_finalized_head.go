@@ -17,11 +17,13 @@
 package beefy
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 )
 
 // GetFinalizedHead returns the hash of the latest BEEFY block
-func (b *beefy) GetFinalizedHead() (types.Hash, error) {
+func (b *beefy) GetFinalizedHead(ctx context.Context) (types.Hash, error) {
 	var res string
 
 	err := b.client.Call(&res, "beefy_getFinalizedHead")

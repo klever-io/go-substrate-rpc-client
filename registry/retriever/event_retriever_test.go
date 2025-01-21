@@ -1,6 +1,7 @@
 package retriever
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -35,6 +36,7 @@ func TestEventRetriever_New(t *testing.T) {
 		Once()
 
 	res, err := NewEventRetriever(
+		context.Background(),
 		eventParserMock,
 		eventProviderMock,
 		stateRPCMock,
@@ -61,6 +63,7 @@ func TestEventRetriever_New_InternalStateUpdateError(t *testing.T) {
 		Once()
 
 	res, err := NewEventRetriever(
+		context.Background(),
 		eventParserMock,
 		eventProviderMock,
 		stateRPCMock,
@@ -84,6 +87,7 @@ func TestEventRetriever_New_InternalStateUpdateError(t *testing.T) {
 		Once()
 
 	res, err = NewEventRetriever(
+		context.Background(),
 		eventParserMock,
 		eventProviderMock,
 		stateRPCMock,
@@ -105,7 +109,7 @@ func TestEventRetriever_NewDefault(t *testing.T) {
 		Return(latestMeta, nil).
 		Once()
 
-	res, err := NewDefaultEventRetriever(eventProviderMock, stateRPCMock)
+	res, err := NewDefaultEventRetriever(context.Background(), eventProviderMock, stateRPCMock)
 	assert.NoError(t, err)
 	assert.IsType(t, &eventRetriever{}, res)
 
@@ -181,7 +185,7 @@ func TestEventRetriever_GetEvents(t *testing.T) {
 			},
 		).Return(parsedEvents, nil)
 
-	res, err := eventRetriever.GetEvents(blockHash)
+	res, err := eventRetriever.GetEvents(context.Background(), blockHash)
 	assert.NoError(t, err)
 	assert.Equal(t, parsedEvents, res)
 }
@@ -245,7 +249,7 @@ func TestEventRetriever_GetEvents_StorageRetrievalError(t *testing.T) {
 			},
 		).Return(&types.StorageDataRaw{}, storageRetrievalError)
 
-	res, err := eventRetriever.GetEvents(blockHash)
+	res, err := eventRetriever.GetEvents(context.Background(), blockHash)
 	assert.ErrorIs(t, err, ErrStorageEventRetrieval)
 	assert.Nil(t, res)
 }
@@ -327,7 +331,7 @@ func TestEventRetriever_GetEvents_EventParsingError(t *testing.T) {
 			},
 		).Return([]*parser.Event{}, eventParsingError)
 
-	res, err := eventRetriever.GetEvents(blockHash)
+	res, err := eventRetriever.GetEvents(context.Background(), blockHash)
 	assert.ErrorIs(t, err, ErrEventParsing)
 	assert.Nil(t, res)
 }
@@ -363,7 +367,7 @@ func TestEventRetriever_updateInternalState(t *testing.T) {
 		Return(eventRegistry, nil).
 		Once()
 
-	err := eventRetriever.updateInternalState(&blockHash)
+	err := eventRetriever.updateInternalState(context.Background(), &blockHash)
 	assert.NoError(t, err)
 	assert.Equal(t, testMeta, eventRetriever.meta)
 	assert.Equal(t, eventRegistry, eventRetriever.eventRegistry)
@@ -378,7 +382,7 @@ func TestEventRetriever_updateInternalState(t *testing.T) {
 		Return(eventRegistry, nil).
 		Once()
 
-	err = eventRetriever.updateInternalState(nil)
+	err = eventRetriever.updateInternalState(context.Background(), nil)
 	assert.NoError(t, err)
 	assert.Equal(t, latestMeta, eventRetriever.meta)
 	assert.Equal(t, eventRegistry, eventRetriever.eventRegistry)
@@ -409,14 +413,14 @@ func TestEventRetriever_updateInternalState_MetadataRetrievalError(t *testing.T)
 		Return(nil, metadataRetrievalError).
 		Once()
 
-	err := eventRetriever.updateInternalState(&blockHash)
+	err := eventRetriever.updateInternalState(context.Background(), &blockHash)
 	assert.ErrorIs(t, err, ErrMetadataRetrieval)
 
 	stateRPCMock.On("GetMetadataLatest").
 		Return(nil, metadataRetrievalError).
 		Once()
 
-	err = eventRetriever.updateInternalState(nil)
+	err = eventRetriever.updateInternalState(context.Background(), nil)
 	assert.ErrorIs(t, err, ErrMetadataRetrieval)
 }
 
@@ -451,7 +455,7 @@ func TestEventRetriever_updateInternalState_RegistryFactoryError(t *testing.T) {
 		Return(nil, registryFactoryError).
 		Once()
 
-	err := eventRetriever.updateInternalState(&blockHash)
+	err := eventRetriever.updateInternalState(context.Background(), &blockHash)
 	assert.ErrorIs(t, err, ErrEventRegistryCreation)
 
 	latestMeta := &types.Metadata{}
@@ -464,6 +468,6 @@ func TestEventRetriever_updateInternalState_RegistryFactoryError(t *testing.T) {
 		Return(nil, registryFactoryError).
 		Once()
 
-	err = eventRetriever.updateInternalState(nil)
+	err = eventRetriever.updateInternalState(context.Background(), nil)
 	assert.ErrorIs(t, err, ErrEventRegistryCreation)
 }

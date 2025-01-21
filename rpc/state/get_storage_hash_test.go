@@ -17,6 +17,7 @@
 package state
 
 import (
+	"context"
 	"testing"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
@@ -26,7 +27,7 @@ import (
 
 func TestState_GetStorageHashLatest(t *testing.T) {
 	key := types.NewStorageKey(codec.MustHexDecodeString("0x3a636f6465"))
-	hash, err := testState.GetStorageHashLatest(key)
+	hash, err := testState.GetStorageHashLatest(context.Background(), key)
 	assert.NoError(t, err)
 	var expected types.Hash
 	copy(expected[:], codec.MustHexDecodeString(mockSrv.storageHashHex))
@@ -35,7 +36,7 @@ func TestState_GetStorageHashLatest(t *testing.T) {
 
 func TestState_GetStorageHash(t *testing.T) {
 	key := types.NewStorageKey(codec.MustHexDecodeString("0x3a636f6465"))
-	hash, err := testState.GetStorageHash(key, mockSrv.blockHashLatest)
+	hash, err := testState.GetStorageHash(context.Background(), key, mockSrv.blockHashLatest)
 	assert.NoError(t, err)
 	var expected types.Hash
 	copy(expected[:], codec.MustHexDecodeString(mockSrv.storageHashHex))

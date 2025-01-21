@@ -1,8 +1,10 @@
 package author_test
 
 import (
-	"github.com/centrifuge/go-substrate-rpc-client/v4/types/extrinsic"
+	"context"
 	"testing"
+
+	"github.com/centrifuge/go-substrate-rpc-client/v4/types/extrinsic"
 
 	gsrpc "github.com/centrifuge/go-substrate-rpc-client/v4"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/config"
@@ -17,7 +19,7 @@ func TestAuthor_SubmitAndWatchExtrinsic(t *testing.T) {
 	api, err := gsrpc.NewSubstrateAPI(config.Default().RPCURL)
 	assert.NoError(t, err)
 
-	meta, err := api.RPC.State.GetMetadataLatest()
+	meta, err := api.RPC.State.GetMetadataLatest(context.Background())
 	assert.NoError(t, err)
 
 	// Create a call, transferring 12345 units to Bob
@@ -32,10 +34,10 @@ func TestAuthor_SubmitAndWatchExtrinsic(t *testing.T) {
 	for {
 		// Create the extrinsic
 		ext := extrinsic.NewExtrinsic(c)
-		genesisHash, err := api.RPC.Chain.GetBlockHash(0)
+		genesisHash, err := api.RPC.Chain.GetBlockHash(context.Background(), 0)
 		assert.NoError(t, err)
 
-		rv, err := api.RPC.State.GetRuntimeVersionLatest()
+		rv, err := api.RPC.State.GetRuntimeVersionLatest(context.Background())
 		assert.NoError(t, err)
 
 		// Get the nonce for Alice
@@ -43,7 +45,7 @@ func TestAuthor_SubmitAndWatchExtrinsic(t *testing.T) {
 		assert.NoError(t, err)
 
 		var accountInfo types.AccountInfo
-		ok, err := api.RPC.State.GetStorageLatest(key, &accountInfo)
+		ok, err := api.RPC.State.GetStorageLatest(context.Background(), key, &accountInfo)
 		assert.NoError(t, err)
 		assert.True(t, ok)
 		nonce := uint32(accountInfo.Nonce)

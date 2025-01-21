@@ -17,6 +17,7 @@
 package teste2e
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -50,14 +51,14 @@ func TestEnd2end(t *testing.T) {
 	fmt.Printf("Connected to node: %v\n", api.Client.URL())
 	fmt.Println()
 
-	runtimeVersion, err := api.RPC.State.GetRuntimeVersionLatest()
+	runtimeVersion, err := api.RPC.State.GetRuntimeVersionLatest(context.Background())
 	assert.NoError(t, err)
 	fmt.Printf("authoringVersion: %v\n", runtimeVersion.AuthoringVersion)
 	fmt.Printf("specVersion: %v\n", runtimeVersion.SpecVersion)
 	fmt.Printf("implVersion: %v\n", runtimeVersion.ImplVersion)
 	fmt.Println()
 
-	hash, err := api.RPC.Chain.GetBlockHashLatest()
+	hash, err := api.RPC.Chain.GetBlockHashLatest(context.Background())
 	assert.NoError(t, err)
 	fmt.Printf("Latest block: %v\n", hash.Hex())
 	fmt.Printf("\tView in Polkadot/Substrate Apps: https://polkadot.js.org/apps/#/explorer/query/%v?"+
@@ -65,7 +66,7 @@ func TestEnd2end(t *testing.T) {
 	fmt.Printf("\tView in polkascan.io: https://polkascan.io/pre/kusama-cc2/block/%v\n", hash.Hex())
 	fmt.Println()
 
-	header, err := api.RPC.Chain.GetHeader(hash)
+	header, err := api.RPC.Chain.GetHeader(context.Background(), hash)
 	assert.NoError(t, err)
 	fmt.Printf("Block number: %v\n", header.Number)
 	fmt.Printf("Parent hash: %v\n", header.ParentHash.Hex())
@@ -73,24 +74,24 @@ func TestEnd2end(t *testing.T) {
 	fmt.Printf("Extrinsics root: %v\n", header.ExtrinsicsRoot.Hex())
 	fmt.Println()
 
-	block, err := api.RPC.Chain.GetBlock(hash)
+	block, err := api.RPC.Chain.GetBlock(context.Background(), hash)
 	assert.NoError(t, err)
 	fmt.Printf("Total extrinsics: %v\n", len(block.Block.Extrinsics))
 	fmt.Println()
 
-	finHead, err := api.RPC.Chain.GetFinalizedHead()
+	finHead, err := api.RPC.Chain.GetFinalizedHead(context.Background())
 	assert.NoError(t, err)
 	fmt.Printf("Last finalized block in the canon chain: %v\n", finHead.Hex())
 	fmt.Println()
 
-	meta, err := api.RPC.State.GetMetadataLatest()
+	meta, err := api.RPC.State.GetMetadataLatest(context.Background())
 	assert.NoError(t, err)
 
 	key, err := types.CreateStorageKey(meta, "Session", "Validators", nil)
 	assert.NoError(t, err)
 
 	var validators []types.AccountID
-	ok, err := api.RPC.State.GetStorageLatest(key, &validators)
+	ok, err := api.RPC.State.GetStorageLatest(context.Background(), key, &validators)
 	assert.NoError(t, err)
 	assert.True(t, ok)
 	fmt.Printf("Current validators:\n")

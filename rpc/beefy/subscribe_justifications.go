@@ -62,8 +62,8 @@ func (s *JustificationsSubscription) Unsubscribe() {
 
 // SubscribeJustifications subscribes beefy justifications, returning a subscription that will
 // receive server notifications containing the Header.
-func (b *beefy) SubscribeJustifications() (*JustificationsSubscription, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), config.Default().SubscribeTimeout)
+func (b *beefy) SubscribeJustifications(ctx context.Context) (*JustificationsSubscription, error) {
+	ctx, cancel := context.WithTimeout(ctx, config.Default().SubscribeTimeout)
 	defer cancel()
 
 	ch := make(chan types.SignedCommitment)

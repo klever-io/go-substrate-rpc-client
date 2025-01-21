@@ -17,10 +17,12 @@
 package gsrpc_test
 
 import (
+	"context"
 	"fmt"
-	"github.com/centrifuge/go-substrate-rpc-client/v4/types/extrinsic"
 	"math/big"
 	"time"
+
+	"github.com/centrifuge/go-substrate-rpc-client/v4/types/extrinsic"
 
 	gsrpc "github.com/centrifuge/go-substrate-rpc-client/v4"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/config"
@@ -66,7 +68,7 @@ func Example_listenToNewBlocks() {
 		panic(err)
 	}
 
-	sub, err := api.RPC.Chain.SubscribeNewHeads()
+	sub, err := api.RPC.Chain.SubscribeNewHeads(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -97,7 +99,7 @@ func Example_listenToBalanceChange() {
 		panic(err)
 	}
 
-	meta, err := api.RPC.State.GetMetadataLatest()
+	meta, err := api.RPC.State.GetMetadataLatest(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -109,7 +111,7 @@ func Example_listenToBalanceChange() {
 	}
 
 	var accountInfo types.AccountInfo
-	ok, err := api.RPC.State.GetStorageLatest(key, &accountInfo)
+	ok, err := api.RPC.State.GetStorageLatest(context.Background(), key, &accountInfo)
 	if err != nil || !ok {
 		panic(err)
 	}
@@ -119,7 +121,7 @@ func Example_listenToBalanceChange() {
 	fmt.Printf("You may leave this example running and transfer any value to %#x\n", alice)
 
 	// Here we subscribe to any balance changes
-	sub, err := api.RPC.State.SubscribeStorageRaw([]types.StorageKey{key})
+	sub, err := api.RPC.State.SubscribeStorageRaw(context.Background(), []types.StorageKey{key})
 	if err != nil {
 		panic(err)
 	}
@@ -164,7 +166,7 @@ func Example_unsubscribeFromListeningToUpdates() {
 		panic(err)
 	}
 
-	sub, err := api.RPC.Chain.SubscribeNewHeads()
+	sub, err := api.RPC.Chain.SubscribeNewHeads(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -193,7 +195,7 @@ func Example_makeASimpleTransfer() {
 		panic(err)
 	}
 
-	meta, err := api.RPC.State.GetMetadataLatest()
+	meta, err := api.RPC.State.GetMetadataLatest(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -218,12 +220,12 @@ func Example_makeASimpleTransfer() {
 	// Create the extrinsic
 	ext := extrinsic.NewExtrinsic(c)
 
-	genesisHash, err := api.RPC.Chain.GetBlockHash(0)
+	genesisHash, err := api.RPC.Chain.GetBlockHash(context.Background(), 0)
 	if err != nil {
 		panic(err)
 	}
 
-	rv, err := api.RPC.State.GetRuntimeVersionLatest()
+	rv, err := api.RPC.State.GetRuntimeVersionLatest(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -234,7 +236,7 @@ func Example_makeASimpleTransfer() {
 	}
 
 	var accountInfo types.AccountInfo
-	ok, err = api.RPC.State.GetStorageLatest(key, &accountInfo)
+	ok, err = api.RPC.State.GetStorageLatest(context.Background(), key, &accountInfo)
 	if err != nil || !ok {
 		panic(err)
 	}
@@ -273,7 +275,7 @@ func Example_displaySystemEvents() {
 		panic(err)
 	}
 
-	meta, err := api.RPC.State.GetMetadataLatest()
+	meta, err := api.RPC.State.GetMetadataLatest(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -284,7 +286,7 @@ func Example_displaySystemEvents() {
 		panic(err)
 	}
 
-	sub, err := api.RPC.State.SubscribeStorageRaw([]types.StorageKey{key})
+	sub, err := api.RPC.State.SubscribeStorageRaw(context.Background(), []types.StorageKey{key})
 	if err != nil {
 		panic(err)
 	}
@@ -408,7 +410,7 @@ func Example_transactionWithEvents() {
 		panic(err)
 	}
 
-	meta, err := api.RPC.State.GetMetadataLatest()
+	meta, err := api.RPC.State.GetMetadataLatest(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -429,12 +431,12 @@ func Example_transactionWithEvents() {
 	// Create the extrinsic
 	ext := extrinsic.NewExtrinsic(c)
 
-	genesisHash, err := api.RPC.Chain.GetBlockHash(0)
+	genesisHash, err := api.RPC.Chain.GetBlockHash(context.Background(), 0)
 	if err != nil {
 		panic(err)
 	}
 
-	rv, err := api.RPC.State.GetRuntimeVersionLatest()
+	rv, err := api.RPC.State.GetRuntimeVersionLatest(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -446,7 +448,7 @@ func Example_transactionWithEvents() {
 	}
 
 	var accountInfo types.AccountInfo
-	ok, err := api.RPC.State.GetStorageLatest(key, &accountInfo)
+	ok, err := api.RPC.State.GetStorageLatest(context.Background(), key, &accountInfo)
 	if err != nil || !ok {
 		panic(err)
 	}

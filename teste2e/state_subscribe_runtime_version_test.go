@@ -17,6 +17,7 @@
 package teste2e
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -30,7 +31,7 @@ func TestState_SubscribeRuntimeVersion(t *testing.T) {
 	}
 	api := subscriptionsAPI
 
-	sub, err := api.RPC.State.SubscribeRuntimeVersion()
+	sub, err := api.RPC.State.SubscribeRuntimeVersion(context.Background())
 	assert.NoError(t, err)
 	defer sub.Unsubscribe()
 

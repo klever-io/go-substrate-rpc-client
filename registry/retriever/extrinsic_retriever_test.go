@@ -1,7 +1,10 @@
 package retriever
 
 import (
+	"context"
 	"errors"
+	"testing"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/registry"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/registry/exec"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/registry/test"
@@ -12,7 +15,6 @@ import (
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types/codec"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 func TestExtrinsicRetriever_New(t *testing.T) {
@@ -35,6 +37,7 @@ func TestExtrinsicRetriever_New(t *testing.T) {
 		Once()
 
 	res, err := NewExtrinsicRetriever(
+		context.Background(),
 		chainRPCMock,
 		stateRPCMock,
 		registryFactoryMock,
@@ -59,6 +62,7 @@ func TestExtrinsicRetriever_New_InternalStateUpdateError(t *testing.T) {
 		Once()
 
 	res, err := NewExtrinsicRetriever(
+		context.Background(),
 		chainRPCMock,
 		stateRPCMock,
 		registryFactoryMock,
@@ -77,6 +81,7 @@ func TestExtrinsicRetriever_New_InternalStateUpdateError(t *testing.T) {
 		Once()
 
 	res, err = NewExtrinsicRetriever(
+		context.Background(),
 		chainRPCMock,
 		stateRPCMock,
 		registryFactoryMock,
@@ -100,6 +105,7 @@ func TestExtrinsicRetriever_NewDefault(t *testing.T) {
 		Return(&meta, nil).
 		Once()
 	res, err := NewDefaultExtrinsicRetriever(
+		context.Background(),
 		chainRPCMock,
 		stateRPCMock,
 	)
@@ -131,6 +137,7 @@ func TestExtrinsicRetriever_GetExtrinsics(t *testing.T) {
 		Once()
 
 	extRet, err := NewExtrinsicRetriever(
+		context.Background(),
 		chainRPCMock,
 		stateRPCMock,
 		registryFactoryMock,
@@ -193,7 +200,7 @@ func TestExtrinsicRetriever_GetExtrinsics(t *testing.T) {
 			},
 		).Return(decodedExtrinsics, nil)
 
-	res, err := extRet.GetExtrinsics(blockHash)
+	res, err := extRet.GetExtrinsics(context.Background(), blockHash)
 	assert.NoError(t, err)
 	assert.Equal(t, decodedExtrinsics, res)
 }
@@ -222,6 +229,7 @@ func TestExtrinsicRetriever_GetExtrinsics_BlockRetrievalError(t *testing.T) {
 		Once()
 
 	extRet, err := NewExtrinsicRetriever(
+		context.Background(),
 		chainRPCMock,
 		stateRPCMock,
 		registryFactoryMock,
@@ -253,7 +261,7 @@ func TestExtrinsicRetriever_GetExtrinsics_BlockRetrievalError(t *testing.T) {
 			},
 		).Return(signedBlock, blockRetrievalError)
 
-	res, err := extRet.GetExtrinsics(blockHash)
+	res, err := extRet.GetExtrinsics(context.Background(), blockHash)
 	assert.ErrorIs(t, err, ErrBlockRetrieval)
 	assert.Nil(t, res)
 }
@@ -282,6 +290,7 @@ func TestExtrinsicRetriever_GetExtrinsics_ExtrinsicDecodeError(t *testing.T) {
 		Once()
 
 	extRet, err := NewExtrinsicRetriever(
+		context.Background(),
 		chainRPCMock,
 		stateRPCMock,
 		registryFactoryMock,
@@ -338,7 +347,7 @@ func TestExtrinsicRetriever_GetExtrinsics_ExtrinsicDecodeError(t *testing.T) {
 			},
 		).Return(decodedExtrinsics, extrinsicDecodeError)
 
-	res, err := extRet.GetExtrinsics(blockHash)
+	res, err := extRet.GetExtrinsics(context.Background(), blockHash)
 	assert.ErrorIs(t, err, ErrExtrinsicDecoding)
 	assert.Nil(t, res)
 }

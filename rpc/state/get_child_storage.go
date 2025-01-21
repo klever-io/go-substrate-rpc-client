@@ -17,6 +17,8 @@
 package state
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/client"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types/codec"
@@ -24,9 +26,9 @@ import (
 
 // GetChildStorage retreives the child storage for a key and decodes them into the provided interface. Ok is true if the
 // value is not empty.
-func (s *state) GetChildStorage(childStorageKey, key types.StorageKey, target interface{}, blockHash types.Hash) (
+func (s *state) GetChildStorage(ctx context.Context, childStorageKey, key types.StorageKey, target interface{}, blockHash types.Hash) (
 	ok bool, err error) {
-	raw, err := s.getChildStorageRaw(childStorageKey, key, &blockHash)
+	raw, err := s.getChildStorageRaw(ctx, childStorageKey, key, &blockHash)
 	if err != nil {
 		return false, err
 	}
@@ -38,8 +40,8 @@ func (s *state) GetChildStorage(childStorageKey, key types.StorageKey, target in
 
 // GetChildStorageLatest retreives the child storage for a key for the latest block height and decodes them into the
 // provided interface. Ok is true if the value is not empty.
-func (s *state) GetChildStorageLatest(childStorageKey, key types.StorageKey, target interface{}) (ok bool, err error) {
-	raw, err := s.getChildStorageRaw(childStorageKey, key, nil)
+func (s *state) GetChildStorageLatest(ctx context.Context, childStorageKey, key types.StorageKey, target interface{}) (ok bool, err error) {
+	raw, err := s.getChildStorageRaw(ctx, childStorageKey, key, nil)
 	if err != nil {
 		return false, err
 	}
@@ -50,21 +52,21 @@ func (s *state) GetChildStorageLatest(childStorageKey, key types.StorageKey, tar
 }
 
 // GetChildStorageRaw retreives the child storage for a key as raw bytes, without decoding them
-func (s *state) GetChildStorageRaw(childStorageKey, key types.StorageKey, blockHash types.Hash) (
+func (s *state) GetChildStorageRaw(ctx context.Context, childStorageKey, key types.StorageKey, blockHash types.Hash) (
 	*types.StorageDataRaw, error) {
-	return s.getChildStorageRaw(childStorageKey, key, &blockHash)
+	return s.getChildStorageRaw(ctx, childStorageKey, key, &blockHash)
 }
 
 // GetChildStorageRawLatest retreives the child storage for a key for the latest block height as raw bytes,
 // without decoding them
-func (s *state) GetChildStorageRawLatest(childStorageKey, key types.StorageKey) (*types.StorageDataRaw, error) {
-	return s.getChildStorageRaw(childStorageKey, key, nil)
+func (s *state) GetChildStorageRawLatest(ctx context.Context, childStorageKey, key types.StorageKey) (*types.StorageDataRaw, error) {
+	return s.getChildStorageRaw(ctx, childStorageKey, key, nil)
 }
 
-func (s *state) getChildStorageRaw(childStorageKey, key types.StorageKey, blockHash *types.Hash) (
+func (s *state) getChildStorageRaw(ctx context.Context, childStorageKey, key types.StorageKey, blockHash *types.Hash) (
 	*types.StorageDataRaw, error) {
 	var res string
-	err := client.CallWithBlockHash(s.client, &res, "state_getChildStorage", blockHash, childStorageKey.Hex(),
+	err := client.CallWithBlockHashContext(ctx, s.client, &res, "state_getChildStorage", blockHash, childStorageKey.Hex(),
 		key.Hex())
 	if err != nil {
 		return nil, err

@@ -17,19 +17,20 @@
 package state
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestState_GetChildStorageSizeLatest(t *testing.T) {
-	size, err := testState.GetChildStorageSizeLatest(childStorageKey, key)
+	size, err := testState.GetChildStorageSizeLatest(context.Background(), childStorageKey, key)
 	assert.NoError(t, err)
 	assert.Equal(t, mockSrv.childStorageTrieSize, size)
 }
 
 func TestState_GetChildStorageSize(t *testing.T) {
-	size, err := testState.GetChildStorageSize(childStorageKey, key, mockSrv.blockHashLatest)
+	size, err := testState.GetChildStorageSize(context.Background(), childStorageKey, key, mockSrv.blockHashLatest)
 	assert.NoError(t, err)
 	assert.Equal(t, mockSrv.childStorageTrieSize, size)
 }

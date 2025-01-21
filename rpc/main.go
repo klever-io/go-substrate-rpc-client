@@ -17,6 +17,8 @@
 package rpc
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/client"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/rpc/author"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/rpc/beefy"
@@ -41,7 +43,7 @@ type RPC struct {
 
 func NewRPC(cl client.Client) (*RPC, error) {
 	st := state.NewState(cl)
-	meta, err := st.GetMetadataLatest()
+	meta, err := st.GetMetadataLatest(context.Background())
 	if err != nil {
 		return nil, err
 	}

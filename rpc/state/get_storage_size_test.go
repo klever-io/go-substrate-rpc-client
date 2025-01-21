@@ -17,6 +17,7 @@
 package state
 
 import (
+	"context"
 	"testing"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
@@ -26,14 +27,14 @@ import (
 
 func TestState_GetStorageSizeLatest(t *testing.T) {
 	key := types.NewStorageKey(codec.MustHexDecodeString("0x3a636f6465"))
-	size, err := testState.GetStorageSizeLatest(key)
+	size, err := testState.GetStorageSizeLatest(context.Background(), key)
 	assert.NoError(t, err)
 	assert.Equal(t, mockSrv.storageSize, size)
 }
 
 func TestState_GetStorageSize(t *testing.T) {
 	key := types.NewStorageKey(codec.MustHexDecodeString("0x3a636f6465"))
-	size, err := testState.GetStorageSize(key, mockSrv.blockHashLatest)
+	size, err := testState.GetStorageSize(context.Background(), key, mockSrv.blockHashLatest)
 	assert.NoError(t, err)
 	assert.Equal(t, mockSrv.storageSize, size)
 }

@@ -17,10 +17,12 @@
 package teste2e
 
 import (
+	"context"
 	"fmt"
-	"github.com/centrifuge/go-substrate-rpc-client/v4/types/extrinsic"
 	"testing"
 	"time"
+
+	"github.com/centrifuge/go-substrate-rpc-client/v4/types/extrinsic"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v4/rpc/author"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/signature"
@@ -41,7 +43,7 @@ func TestAuthor_SubmitAndWatchExtrinsic(t *testing.T) {
 
 	api := subscriptionsAPI
 
-	meta, err := api.RPC.State.GetMetadataLatest()
+	meta, err := api.RPC.State.GetMetadataLatest(context.Background())
 	assert.NoError(t, err)
 
 	bob, err := types.NewMultiAddressFromHexAccountID("0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48")
@@ -53,10 +55,10 @@ func TestAuthor_SubmitAndWatchExtrinsic(t *testing.T) {
 	ext := extrinsic.NewExtrinsic(c)
 	assert.NoError(t, err)
 
-	genesisHash, err := api.RPC.Chain.GetBlockHash(0)
+	genesisHash, err := api.RPC.Chain.GetBlockHash(context.Background(), 0)
 	assert.NoError(t, err)
 
-	rv, err := api.RPC.State.GetRuntimeVersionLatest()
+	rv, err := api.RPC.State.GetRuntimeVersionLatest(context.Background())
 	assert.NoError(t, err)
 
 	key, err := types.CreateStorageKey(meta, "System", "Account", from.PublicKey)
@@ -66,7 +68,7 @@ func TestAuthor_SubmitAndWatchExtrinsic(t *testing.T) {
 	for {
 
 		var accountInfo types.AccountInfo
-		ok, err = api.RPC.State.GetStorageLatest(key, &accountInfo)
+		ok, err = api.RPC.State.GetStorageLatest(context.Background(), key, &accountInfo)
 		assert.NoError(t, err)
 		assert.True(t, ok)
 

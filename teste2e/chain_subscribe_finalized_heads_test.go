@@ -17,6 +17,7 @@
 package teste2e
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -34,7 +35,7 @@ func TestChain_SubscribeFinalizedHeads(t *testing.T) {
 	api, err := gsrpc.NewSubstrateAPI(config.Default().RPCURL)
 	assert.NoError(t, err)
 
-	sub, err := api.RPC.Chain.SubscribeFinalizedHeads()
+	sub, err := api.RPC.Chain.SubscribeFinalizedHeads(context.Background())
 	assert.NoError(t, err)
 	defer sub.Unsubscribe()
 

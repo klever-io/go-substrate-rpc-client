@@ -17,24 +17,26 @@
 package mmr
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/client"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 )
 
 // GenerateProof retrieves a MMR proof and leaf for the specified leave index, at the given blockHash (useful to query a
 // proof at an earlier block, likely with antoher MMR root)
-func (c *mmr) GenerateProof(leafIndex uint64, blockHash types.Hash) (types.GenerateMMRProofResponse, error) {
-	return c.generateProof(leafIndex, &blockHash)
+func (c *mmr) GenerateProof(ctx context.Context, leafIndex uint64, blockHash types.Hash) (types.GenerateMMRProofResponse, error) {
+	return c.generateProof(ctx, leafIndex, &blockHash)
 }
 
 // GenerateProofLatest retrieves the latest MMR proof and leaf for the specified leave index
-func (c *mmr) GenerateProofLatest(leafIndex uint64) (types.GenerateMMRProofResponse, error) {
-	return c.generateProof(leafIndex, nil)
+func (c *mmr) GenerateProofLatest(ctx context.Context, leafIndex uint64) (types.GenerateMMRProofResponse, error) {
+	return c.generateProof(ctx, leafIndex, nil)
 }
 
-func (c *mmr) generateProof(leafIndex uint64, blockHash *types.Hash) (types.GenerateMMRProofResponse, error) {
+func (c *mmr) generateProof(ctx context.Context, leafIndex uint64, blockHash *types.Hash) (types.GenerateMMRProofResponse, error) {
 	var res types.GenerateMMRProofResponse
-	err := client.CallWithBlockHash(c.client, &res, "mmr_generateProof", blockHash, leafIndex)
+	err := client.CallWithBlockHashContext(ctx, c.client, &res, "mmr_generateProof", blockHash, leafIndex)
 	if err != nil {
 		return types.GenerateMMRProofResponse{}, err
 	}

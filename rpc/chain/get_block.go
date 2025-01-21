@@ -17,24 +17,26 @@
 package chain
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/client"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types/block"
 )
 
 // GetBlock returns the header and body of the relay chain block with the given hash
-func (c *chain) GetBlock(blockHash types.Hash) (*block.SignedBlock, error) {
-	return c.getBlock(&blockHash)
+func (c *chain) GetBlock(ctx context.Context, blockHash types.Hash) (*block.SignedBlock, error) {
+	return c.getBlock(ctx, &blockHash)
 }
 
 // GetBlockLatest returns the header and body of the latest relay chain block
-func (c *chain) GetBlockLatest() (*block.SignedBlock, error) {
-	return c.getBlock(nil)
+func (c *chain) GetBlockLatest(ctx context.Context) (*block.SignedBlock, error) {
+	return c.getBlock(ctx, nil)
 }
 
-func (c *chain) getBlock(blockHash *types.Hash) (*block.SignedBlock, error) {
+func (c *chain) getBlock(ctx context.Context, blockHash *types.Hash) (*block.SignedBlock, error) {
 	var res block.SignedBlock
-	err := client.CallWithBlockHash(c.client, &res, "chain_getBlock", blockHash)
+	err := client.CallWithBlockHashContext(ctx, c.client, &res, "chain_getBlock", blockHash)
 	if err != nil {
 		return nil, err
 	}

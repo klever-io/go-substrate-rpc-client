@@ -17,6 +17,7 @@
 package beefy
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -24,6 +25,6 @@ import (
 
 func TestBeefy_GetFinalizedHead(t *testing.T) {
 	t.Skip("API only available in Polkadot")
-	_, err := testBeefy.GetFinalizedHead()
+	_, err := testBeefy.GetFinalizedHead(context.Background())
 	assert.NoError(t, err)
 }

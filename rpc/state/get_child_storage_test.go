@@ -17,6 +17,7 @@
 package state
 
 import (
+	"context"
 	"testing"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
@@ -29,7 +30,7 @@ var key = types.NewStorageKey(codec.MustHexDecodeString(mockSrv.childStorageTrie
 
 func TestState_GetChildStorageLatest(t *testing.T) {
 	var decoded ChildStorageTrieTestVal
-	ok, err := testState.GetChildStorageLatest(childStorageKey, key, &decoded)
+	ok, err := testState.GetChildStorageLatest(context.Background(), childStorageKey, key, &decoded)
 	assert.True(t, ok)
 	assert.NoError(t, err)
 	assert.Equal(t, mockSrv.childStorageTrieValue, decoded)
@@ -37,20 +38,20 @@ func TestState_GetChildStorageLatest(t *testing.T) {
 
 func TestState_GetChildStorage(t *testing.T) {
 	var decoded ChildStorageTrieTestVal
-	ok, err := testState.GetChildStorageLatest(childStorageKey, key, &decoded)
+	ok, err := testState.GetChildStorageLatest(context.Background(), childStorageKey, key, &decoded)
 	assert.True(t, ok)
 	assert.NoError(t, err)
 	assert.Equal(t, mockSrv.childStorageTrieValue, decoded, mockSrv.blockHashLatest)
 }
 
 func TestState_GetChildStorageRawLatest(t *testing.T) {
-	data, err := testState.GetChildStorageRawLatest(childStorageKey, key)
+	data, err := testState.GetChildStorageRawLatest(context.Background(), childStorageKey, key)
 	assert.NoError(t, err)
 	assert.Equal(t, mockSrv.childStorageTrieValueHex, data.Hex())
 }
 
 func TestState_GetChildStorageRaw(t *testing.T) {
-	data, err := testState.GetChildStorageRaw(childStorageKey, key, mockSrv.blockHashLatest)
+	data, err := testState.GetChildStorageRaw(context.Background(), childStorageKey, key, mockSrv.blockHashLatest)
 	assert.NoError(t, err)
 	assert.Equal(t, mockSrv.childStorageTrieValueHex, data.Hex())
 }

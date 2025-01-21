@@ -1,6 +1,8 @@
 package state
 
 import (
+	"context"
+
 	libErr "github.com/centrifuge/go-substrate-rpc-client/v4/error"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/rpc/state"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
@@ -41,7 +43,7 @@ func (p *eventProvider) GetStorageEvents(meta *types.Metadata, blockHash types.H
 		return nil, ErrEventStorageKeyCreation.Wrap(err)
 	}
 
-	storageData, err := p.stateRPC.GetStorageRaw(key, blockHash)
+	storageData, err := p.stateRPC.GetStorageRaw(context.Background(), key, blockHash)
 
 	if err != nil {
 		return nil, ErrEventStorageRetrieval.Wrap(err)

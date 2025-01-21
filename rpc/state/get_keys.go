@@ -17,24 +17,26 @@
 package state
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/client"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types/codec"
 )
 
 // GetKeys retreives the keys with the given prefix
-func (s *state) GetKeys(prefix types.StorageKey, blockHash types.Hash) ([]types.StorageKey, error) {
-	return s.getKeys(prefix, &blockHash)
+func (s *state) GetKeys(ctx context.Context, prefix types.StorageKey, blockHash types.Hash) ([]types.StorageKey, error) {
+	return s.getKeys(ctx, prefix, &blockHash)
 }
 
 // GetKeysLatest retreives the keys with the given prefix for the latest block height
-func (s *state) GetKeysLatest(prefix types.StorageKey) ([]types.StorageKey, error) {
-	return s.getKeys(prefix, nil)
+func (s *state) GetKeysLatest(ctx context.Context, prefix types.StorageKey) ([]types.StorageKey, error) {
+	return s.getKeys(ctx, prefix, nil)
 }
 
-func (s *state) getKeys(prefix types.StorageKey, blockHash *types.Hash) ([]types.StorageKey, error) {
+func (s *state) getKeys(ctx context.Context, prefix types.StorageKey, blockHash *types.Hash) ([]types.StorageKey, error) {
 	var res []string
-	err := client.CallWithBlockHash(s.client, &res, "state_getKeys", blockHash, prefix.Hex())
+	err := client.CallWithBlockHashContext(ctx, s.client, &res, "state_getKeys", blockHash, prefix.Hex())
 	if err != nil {
 		return nil, err
 	}

@@ -17,9 +17,11 @@
 package state
 
 import (
+	"context"
+	"testing"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types/codec"
-	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -30,7 +32,7 @@ func TestState_GetMetadataLatest(t *testing.T) {
 	err := codec.DecodeFromHex(types.MetadataV14Data, &meta)
 	assert.NoError(t, err)
 
-	md, err := testState.GetMetadataLatest()
+	md, err := testState.GetMetadataLatest(context.Background())
 	assert.NoError(t, err)
 	assert.Equal(t, meta, *md)
 }
@@ -41,7 +43,7 @@ func TestState_GetMetadata(t *testing.T) {
 	err := codec.DecodeFromHex(types.MetadataV14Data, &meta)
 	assert.NoError(t, err)
 
-	md, err := testState.GetMetadata(mockSrv.blockHashLatest)
+	md, err := testState.GetMetadata(context.Background(), mockSrv.blockHashLatest)
 	assert.NoError(t, err)
 	assert.Equal(t, meta, *md)
 }

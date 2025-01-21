@@ -17,23 +17,25 @@
 package state
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/client"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 )
 
 // GetRuntimeVersion returns the runtime version at the given block
-func (s *state) GetRuntimeVersion(blockHash types.Hash) (*types.RuntimeVersion, error) {
-	return s.getRuntimeVersion(&blockHash)
+func (s *state) GetRuntimeVersion(ctx context.Context, blockHash types.Hash) (*types.RuntimeVersion, error) {
+	return s.getRuntimeVersion(ctx, &blockHash)
 }
 
 // GetRuntimeVersionLatest returns the latest runtime version
-func (s *state) GetRuntimeVersionLatest() (*types.RuntimeVersion, error) {
-	return s.getRuntimeVersion(nil)
+func (s *state) GetRuntimeVersionLatest(ctx context.Context) (*types.RuntimeVersion, error) {
+	return s.getRuntimeVersion(ctx, nil)
 }
 
-func (s *state) getRuntimeVersion(blockHash *types.Hash) (*types.RuntimeVersion, error) {
+func (s *state) getRuntimeVersion(ctx context.Context, blockHash *types.Hash) (*types.RuntimeVersion, error) {
 	var runtimeVersion types.RuntimeVersion
-	err := client.CallWithBlockHash(s.client, &runtimeVersion, "state_getRuntimeVersion", blockHash)
+	err := client.CallWithBlockHashContext(ctx, s.client, &runtimeVersion, "state_getRuntimeVersion", blockHash)
 	if err != nil {
 		return nil, err
 	}

@@ -17,6 +17,7 @@
 package state
 
 import (
+	"context"
 	"testing"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
@@ -27,7 +28,7 @@ import (
 func TestState_QueryStorageLatest(t *testing.T) {
 	key := types.NewStorageKey(codec.MustHexDecodeString(mockSrv.storageKeyHex))
 	hash := types.NewHash(codec.MustHexDecodeString("0xdd1816b6f6889f46e23b0d6750bc441af9dad0fda8bae90677c1708d01035fbe"))
-	data, err := testState.QueryStorageLatest([]types.StorageKey{key}, hash)
+	data, err := testState.QueryStorageLatest(context.Background(), []types.StorageKey{key}, hash)
 	assert.NoError(t, err)
 	assert.Equal(t, mockSrv.storageChangeSets, data)
 }
@@ -35,7 +36,7 @@ func TestState_QueryStorageLatest(t *testing.T) {
 func TestState_QueryStorage(t *testing.T) {
 	key := types.NewStorageKey(codec.MustHexDecodeString(mockSrv.storageKeyHex))
 	hash := types.NewHash(codec.MustHexDecodeString("0xdd1816b6f6889f46e23b0d6750bc441af9dad0fda8bae90677c1708d01035fbe"))
-	data, err := testState.QueryStorage([]types.StorageKey{key}, hash, mockSrv.blockHashLatest)
+	data, err := testState.QueryStorage(context.Background(), []types.StorageKey{key}, hash, mockSrv.blockHashLatest)
 	assert.NoError(t, err)
 	assert.Equal(t, mockSrv.storageChangeSets, data)
 }

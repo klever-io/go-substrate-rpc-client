@@ -17,19 +17,20 @@
 package chain
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestChain_GetFinalizedHead(t *testing.T) {
-	res, err := testChain.GetFinalizedHead()
+	res, err := testChain.GetFinalizedHead(context.Background())
 	assert.NoError(t, err)
 
-	header, err := testChain.GetHeaderLatest()
+	header, err := testChain.GetHeaderLatest(context.Background())
 	assert.NoError(t, err)
 
-	fheader, err := testChain.GetHeader(res)
+	fheader, err := testChain.GetHeader(context.Background(), res)
 	assert.NoError(t, err)
 
 	assert.True(t, header.Number > fheader.Number)

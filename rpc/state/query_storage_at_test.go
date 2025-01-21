@@ -17,6 +17,7 @@
 package state
 
 import (
+	"context"
 	"testing"
 
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
@@ -26,7 +27,7 @@ import (
 
 func TestState_QueryStorageAtLatest(t *testing.T) {
 	key := types.NewStorageKey(codec.MustHexDecodeString(mockSrv.storageKeyHex))
-	data, err := testState.QueryStorageAtLatest([]types.StorageKey{key})
+	data, err := testState.QueryStorageAtLatest(context.Background(), []types.StorageKey{key})
 	assert.NoError(t, err)
 	assert.Equal(t, mockSrv.storageChangeSets, data)
 }
@@ -34,7 +35,7 @@ func TestState_QueryStorageAtLatest(t *testing.T) {
 func TestState_QueryStorageAt(t *testing.T) {
 	key := types.NewStorageKey(codec.MustHexDecodeString(mockSrv.storageKeyHex))
 	hash := types.NewHash(codec.MustHexDecodeString("0xdd1816b6f6889f46e23b0d6750bc441af9dad0fda8bae90677c1708d01035fbe"))
-	data, err := testState.QueryStorageAt([]types.StorageKey{key}, hash)
+	data, err := testState.QueryStorageAt(context.Background(), []types.StorageKey{key}, hash)
 	assert.NoError(t, err)
 	assert.Equal(t, mockSrv.storageChangeSets, data)
 }

@@ -17,23 +17,25 @@
 package state
 
 import (
+	"context"
+
 	"github.com/centrifuge/go-substrate-rpc-client/v4/client"
 	"github.com/centrifuge/go-substrate-rpc-client/v4/types"
 )
 
 // GetChildStorageSize retreives the child storage size for the given key
-func (s *state) GetChildStorageSize(childStorageKey, key types.StorageKey, blockHash types.Hash) (types.U64, error) {
-	return s.getChildStorageSize(childStorageKey, key, &blockHash)
+func (s *state) GetChildStorageSize(ctx context.Context, childStorageKey, key types.StorageKey, blockHash types.Hash) (types.U64, error) {
+	return s.getChildStorageSize(ctx, childStorageKey, key, &blockHash)
 }
 
 // GetChildStorageSizeLatest retreives the child storage size for the given key for the latest block height
-func (s *state) GetChildStorageSizeLatest(childStorageKey, key types.StorageKey) (types.U64, error) {
-	return s.getChildStorageSize(childStorageKey, key, nil)
+func (s *state) GetChildStorageSizeLatest(ctx context.Context, childStorageKey, key types.StorageKey) (types.U64, error) {
+	return s.getChildStorageSize(ctx, childStorageKey, key, nil)
 }
 
-func (s *state) getChildStorageSize(childStorageKey, key types.StorageKey, blockHash *types.Hash) (types.U64, error) {
+func (s *state) getChildStorageSize(ctx context.Context, childStorageKey, key types.StorageKey, blockHash *types.Hash) (types.U64, error) {
 	var res types.U64
-	err := client.CallWithBlockHash(s.client, &res, "state_getChildStorageSize", blockHash, childStorageKey.Hex(),
+	err := client.CallWithBlockHashContext(ctx, s.client, &res, "state_getChildStorageSize", blockHash, childStorageKey.Hex(),
 		key.Hex())
 	if err != nil {
 		return 0, err
